@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class playerControls : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public Camera camera;
     private Animator animator;
     private NewPlayerInput input;
     private int velocityState;
@@ -32,6 +32,7 @@ public class playerControls : MonoBehaviour
         input.playerControls.Enable();
     }
 
+    // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
