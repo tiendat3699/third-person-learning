@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 4112e72d9e549f94f8cef32c6b5cc331
+guid: b5f414e80ed91bc44a3d50df035e8431
 ModelImporter:
   serializedVersion: 21202
   internalIDToNameTable:
   - first:
       74: -203655887218126122
-    second: Fall A Land To Run Forward
+    second: Falling To Roll
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -36,11 +36,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Fall A Land To Run Forward
+      name: Falling To Roll
       takeName: mixamo.com
       internalID: 0
-      firstFrame: 0
-      lastFrame: 19.9
+      firstFrame: 20
+      lastFrame: 40
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

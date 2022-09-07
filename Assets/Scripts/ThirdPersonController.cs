@@ -327,6 +327,7 @@ namespace StarterAssets
                 if (_fallTimeoutDelta >= 0.0f)
                 {
                     _fallTimeoutDelta -= Time.deltaTime;
+                    Debug.Log(_fallTimeoutDelta);
                 }
                 else
                 {

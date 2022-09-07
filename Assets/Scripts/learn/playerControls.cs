@@ -21,14 +21,16 @@ public class playerControls : MonoBehaviour
     private float velocity = 0;
     private float targetSpeed;
     private bool sprint;
+    private bool readyJump = true;
     private bool jump;
     private bool jumping;
-    private bool isGrounded;
     private float speed;
     private Vector2 currentMovementInput;
     private Vector3 moveDir;
     private float initVelocity;
     private float turnVelocity;
+    private float timeOutFalling = 0.2f;
+    private float timeFalling = 0;
     private void Awake() {
         input = new NewPlayerInput();
 
@@ -37,8 +39,11 @@ public class playerControls : MonoBehaviour
 
         input.playerControls.sprint.performed += (ctx)=> sprint = ctx.ReadValueAsButton();
 
-        input.playerControls.jump.performed += (ctx) => jump = ctx.ReadValueAsButton();
-        input.playerControls.jump.canceled += (ctx) => jump = ctx.ReadValueAsButton();
+        input.playerControls.jump.performed += (ctx) => jump = true;
+        input.playerControls.jump.canceled += (ctx) => {
+            jump = false;
+            readyJump = true;
+        };
     }
 
     private void OnEnable() {
@@ -59,8 +64,6 @@ public class playerControls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isGrounded = characterController.isGrounded;
-
         HandleMove();
         HandleRotation();
         HandleGravity();
@@ -88,28 +91,49 @@ public class playerControls : MonoBehaviour
             if(velocity < 0.01f) velocity = 0;
             animator.SetFloat(velocityState,velocity);
         }
-
         characterController.Move(moveDir.normalized * speed * Time.deltaTime + new Vector3(0, initVelocity, 0) * Time.deltaTime);
     }
 
     private void HandleJump() {
-        if(jump && !jumping && isGrounded) {
-            animator.SetBool(jumpState, true);
-            initVelocity = jumpForce;
-            jumping = true;
-        }
     }
 
     private void HandleGravity() {
+        bool isGrounded = characterController.isGrounded;
+        //handle gravity
         if(isGrounded && !jumping) {
-            animator.SetBool(jumpState, false);
-            animator.SetBool(groundedState, true);
             initVelocity = -gravity * Time.deltaTime;
+            animator.SetBool(groundedState, true);
+            animator.SetBool(fallingState, false);
+            timeFalling = 0;
         } else {
-            animator.SetBool(groundedState, false);
             initVelocity -= gravity * Time.deltaTime;
-            jumping = jump || false;
+            if(initVelocity <= -2f) {
+                timeFalling += Time.deltaTime;
+                if(timeFalling >= timeOutFalling) {
+                    animator.SetBool(fallingState, true);
+                }
+            } else {
+                timeFalling = 0;
+            }
         }
+
+        //handle jump
+        if(jumping && isGrounded && !jump) {
+            animator.SetBool(jumpState, false);
+            jumping = false;
+        }
+
+        if(jump && !jumping && isGrounded && readyJump) {
+             if (!animator.GetCurrentAnimatorStateInfo(0).IsName("landing Blend Tree"))
+                {
+                    readyJump = false;
+                    jumping = true;
+                    animator.SetBool(jumpState, true);
+                    animator.SetBool(groundedState, false);
+                    initVelocity = jumpForce;
+                }
+        }
+
     }
 
     private void HandleRotation() {
