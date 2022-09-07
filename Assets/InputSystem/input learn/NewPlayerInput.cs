@@ -44,6 +44,15 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""ad1c5e88-5d32-458b-8771-1b0542b1102b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -178,6 +187,28 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
                     ""action"": ""sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""80011de8-376f-4b17-b855-58b0a5127940"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3a5c1e82-1665-491f-b444-7b6b0e2c160c"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -188,6 +219,7 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
         m_playerControls = asset.FindActionMap("playerControls", throwIfNotFound: true);
         m_playerControls_move = m_playerControls.FindAction("move", throwIfNotFound: true);
         m_playerControls_sprint = m_playerControls.FindAction("sprint", throwIfNotFound: true);
+        m_playerControls_jump = m_playerControls.FindAction("jump", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -249,12 +281,14 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
     private IPlayerControlsActions m_PlayerControlsActionsCallbackInterface;
     private readonly InputAction m_playerControls_move;
     private readonly InputAction m_playerControls_sprint;
+    private readonly InputAction m_playerControls_jump;
     public struct PlayerControlsActions
     {
         private @NewPlayerInput m_Wrapper;
         public PlayerControlsActions(@NewPlayerInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @move => m_Wrapper.m_playerControls_move;
         public InputAction @sprint => m_Wrapper.m_playerControls_sprint;
+        public InputAction @jump => m_Wrapper.m_playerControls_jump;
         public InputActionMap Get() { return m_Wrapper.m_playerControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -270,6 +304,9 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
                 @sprint.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnSprint;
                 @sprint.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnSprint;
                 @sprint.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnSprint;
+                @jump.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnJump;
+                @jump.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnJump;
+                @jump.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnJump;
             }
             m_Wrapper.m_PlayerControlsActionsCallbackInterface = instance;
             if (instance != null)
@@ -280,6 +317,9 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
                 @sprint.started += instance.OnSprint;
                 @sprint.performed += instance.OnSprint;
                 @sprint.canceled += instance.OnSprint;
+                @jump.started += instance.OnJump;
+                @jump.performed += instance.OnJump;
+                @jump.canceled += instance.OnJump;
             }
         }
     }
@@ -288,5 +328,6 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
     }
 }
