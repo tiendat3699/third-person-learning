@@ -9,6 +9,8 @@ public class playerControls : MonoBehaviour
     public Transform cam;
     public float WalkSpeed = 2f;
     public float RunSpeed = 5f;
+    public float gravity = 15f;
+    public float jumpForce = 8f;
     private CharacterController characterController;
     private Animator animator;
     private NewPlayerInput input;
@@ -20,26 +22,23 @@ public class playerControls : MonoBehaviour
     private float targetSpeed;
     private bool sprint;
     private bool jump;
+    private bool jumping;
+    private bool isGrounded;
+    private float speed;
     private Vector2 currentMovementInput;
     private Vector3 moveDir;
+    private float initVelocity;
     private float turnVelocity;
     private void Awake() {
         input = new NewPlayerInput();
-        input.playerControls.move.performed += (ctx)=> {
-            currentMovementInput = ctx.ReadValue<Vector2>();
-        };
 
-        input.playerControls.move.canceled += (ctx) => {
-            currentMovementInput = ctx.ReadValue<Vector2>();
-        };
+        input.playerControls.move.performed += (ctx)=> currentMovementInput = ctx.ReadValue<Vector2>();
+        input.playerControls.move.canceled += (ctx) => currentMovementInput = ctx.ReadValue<Vector2>();
 
-        input.playerControls.sprint.performed += (ctx)=> {
-            sprint = ctx.ReadValueAsButton();
-        };
+        input.playerControls.sprint.performed += (ctx)=> sprint = ctx.ReadValueAsButton();
 
-        input.playerControls.jump.performed += (ctx) => {
-            jump = ctx.ReadValueAsButton();
-        };
+        input.playerControls.jump.performed += (ctx) => jump = ctx.ReadValueAsButton();
+        input.playerControls.jump.canceled += (ctx) => jump = ctx.ReadValueAsButton();
     }
 
     private void OnEnable() {
@@ -60,10 +59,12 @@ public class playerControls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        isGrounded = characterController.isGrounded;
+
         HandleMove();
         HandleRotation();
-        HandleJump();
         HandleGravity();
+        HandleJump();
     }
 
     private void OnDisable() {
@@ -71,7 +72,7 @@ public class playerControls : MonoBehaviour
     }
 
     private void HandleMove() {
-        float speed = WalkSpeed;
+        speed = WalkSpeed;
         if(currentMovementInput != Vector2.zero) {
             targetSpeed = 0.3f;
             if(sprint) {
@@ -80,26 +81,34 @@ public class playerControls : MonoBehaviour
             }
             velocity = Mathf.Lerp(velocity, targetSpeed, 10f * Time.deltaTime);
             animator.SetFloat(velocityState, velocity);
-            characterController.Move(moveDir.normalized * speed * Time.deltaTime);
         } else {
+            speed = 0;
             targetSpeed = 0f;
             velocity = Mathf.Lerp(velocity, targetSpeed, 10f * Time.deltaTime);
             if(velocity < 0.01f) velocity = 0;
             animator.SetFloat(velocityState,velocity);
         }
+
+        characterController.Move(moveDir.normalized * speed * Time.deltaTime + new Vector3(0, initVelocity, 0) * Time.deltaTime);
     }
 
     private void HandleJump() {
-        if(jump) {
-            
+        if(jump && !jumping && isGrounded) {
+            animator.SetBool(jumpState, true);
+            initVelocity = jumpForce;
+            jumping = true;
         }
     }
 
     private void HandleGravity() {
-        if(characterController.isGrounded) {
-            moveDir.y = -0.5f;
+        if(isGrounded && !jumping) {
+            animator.SetBool(jumpState, false);
+            animator.SetBool(groundedState, true);
+            initVelocity = -gravity * Time.deltaTime;
         } else {
-            moveDir.y += -9.8f;
+            animator.SetBool(groundedState, false);
+            initVelocity -= gravity * Time.deltaTime;
+            jumping = jump || false;
         }
     }
 

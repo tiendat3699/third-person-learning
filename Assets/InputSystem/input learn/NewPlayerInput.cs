@@ -53,6 +53,15 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""look"",
+                    ""type"": ""Button"",
+                    ""id"": ""06980a2b-0849-4cab-a9a4-87b8a5564094"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -180,7 +189,7 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""68ac0abf-7de1-4ff9-9b70-bfccecb0d07d"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
                     ""interactions"": ""Press(behavior=2)"",
                     ""processors"": """",
                     ""groups"": """",
@@ -209,6 +218,17 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
                     ""action"": ""jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""12062c47-1b0a-4d82-bdc9-6764f1086f74"",
+                    ""path"": ""<Gamepad>/rightStick/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -220,6 +240,7 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
         m_playerControls_move = m_playerControls.FindAction("move", throwIfNotFound: true);
         m_playerControls_sprint = m_playerControls.FindAction("sprint", throwIfNotFound: true);
         m_playerControls_jump = m_playerControls.FindAction("jump", throwIfNotFound: true);
+        m_playerControls_look = m_playerControls.FindAction("look", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -282,6 +303,7 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_playerControls_move;
     private readonly InputAction m_playerControls_sprint;
     private readonly InputAction m_playerControls_jump;
+    private readonly InputAction m_playerControls_look;
     public struct PlayerControlsActions
     {
         private @NewPlayerInput m_Wrapper;
@@ -289,6 +311,7 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
         public InputAction @move => m_Wrapper.m_playerControls_move;
         public InputAction @sprint => m_Wrapper.m_playerControls_sprint;
         public InputAction @jump => m_Wrapper.m_playerControls_jump;
+        public InputAction @look => m_Wrapper.m_playerControls_look;
         public InputActionMap Get() { return m_Wrapper.m_playerControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -307,6 +330,9 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
                 @jump.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnJump;
                 @jump.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnJump;
                 @jump.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnJump;
+                @look.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnLook;
+                @look.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnLook;
+                @look.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnLook;
             }
             m_Wrapper.m_PlayerControlsActionsCallbackInterface = instance;
             if (instance != null)
@@ -320,6 +346,9 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
                 @jump.started += instance.OnJump;
                 @jump.performed += instance.OnJump;
                 @jump.canceled += instance.OnJump;
+                @look.started += instance.OnLook;
+                @look.performed += instance.OnLook;
+                @look.canceled += instance.OnLook;
             }
         }
     }
@@ -329,5 +358,6 @@ public partial class @NewPlayerInput : IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnLook(InputAction.CallbackContext context);
     }
 }

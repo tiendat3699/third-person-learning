@@ -31,6 +31,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "look",
+                    "type": "Button",
+                    "id": "06980a2b-0849-4cab-a9a4-87b8a5564094",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -158,7 +167,7 @@
                 {
                     "name": "",
                     "id": "68ac0abf-7de1-4ff9-9b70-bfccecb0d07d",
-                    "path": "<Gamepad>/leftShoulder",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "",
@@ -185,6 +194,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "12062c47-1b0a-4d82-bdc9-6764f1086f74",
+                    "path": "<Gamepad>/rightStick/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "look",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
