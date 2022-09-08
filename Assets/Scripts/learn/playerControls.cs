@@ -29,9 +29,12 @@ public class playerControls : MonoBehaviour
     private Vector3 moveDir;
     private float initVelocity;
     private float turnVelocity;
-    private float timeOutFalling = 0.2f;
+    private float timeOutFalling = 0.4f;
     private float timeFalling = 0;
     private void Awake() {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
         input = new NewPlayerInput();
 
         input.playerControls.move.performed += (ctx)=> currentMovementInput = ctx.ReadValue<Vector2>();
@@ -39,11 +42,12 @@ public class playerControls : MonoBehaviour
 
         input.playerControls.sprint.performed += (ctx)=> sprint = ctx.ReadValueAsButton();
 
-        input.playerControls.jump.performed += (ctx) => jump = true;
+        input.playerControls.jump.started += (ctx) => jump = !jumping && true;
         input.playerControls.jump.canceled += (ctx) => {
             jump = false;
             readyJump = true;
         };
+
     }
 
     private void OnEnable() {
@@ -67,7 +71,6 @@ public class playerControls : MonoBehaviour
         HandleMove();
         HandleRotation();
         HandleGravity();
-        HandleJump();
     }
 
     private void OnDisable() {
@@ -94,9 +97,6 @@ public class playerControls : MonoBehaviour
         characterController.Move(moveDir.normalized * speed * Time.deltaTime + new Vector3(0, initVelocity, 0) * Time.deltaTime);
     }
 
-    private void HandleJump() {
-    }
-
     private void HandleGravity() {
         bool isGrounded = characterController.isGrounded;
         //handle gravity
@@ -118,7 +118,7 @@ public class playerControls : MonoBehaviour
         }
 
         //handle jump
-        if(jumping && isGrounded && !jump) {
+        if(jumping && isGrounded) {
             animator.SetBool(jumpState, false);
             jumping = false;
         }
